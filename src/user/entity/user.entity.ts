@@ -7,19 +7,24 @@ import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 @Unique(['externalId', 'email'])
 export class User extends BaseCollection {
   @ApiProperty()
+  @Column({ length: 150 })
+  @IsUUID()
+  externalId: string;
+
+  @ApiProperty()
   @Column()
   @IsEmail()
   email: string;
 
   @ApiProperty()
   @Column({ length: 150 })
-  @IsUUID()
-  externalId: string;
-
-  @ApiProperty()
-  @Column({ length: 150 })
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty()
+  @Column({ length: 11 })
+  @IsNotEmpty()
+  cpf: string;
 
   @ApiProperty()
   @Column({ type: 'timestamp' })
