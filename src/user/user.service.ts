@@ -8,7 +8,7 @@ import { User } from './entity/user.entity';
 import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { GetAllUsersResponseDto } from './dto/request/get-all-user-response.dto';
+import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
 
 @Injectable()
 export class UserService {

@@ -23,7 +23,7 @@ import { UserDto } from './dto/response/user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { DeleteResponseDto } from './dto/response/delete-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
-import { GetAllUsersResponseDto } from './dto/request/get-all-user-response.dto';
+import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
 
 @ApiTags('User')
 @Controller('users')
