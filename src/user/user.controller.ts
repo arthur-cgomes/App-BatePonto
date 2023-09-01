@@ -1,7 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -24,5 +26,15 @@ export class UserController {
   })
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
+  }
+
+  @Get(':userId')
+  @ApiOperation({
+    summary: 'Retorna um usuário pelo id',
+  })
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  async getUserById(@Param('userId') userId: string) {
+    return await this.userService.getUserById(userId);
   }
 }
