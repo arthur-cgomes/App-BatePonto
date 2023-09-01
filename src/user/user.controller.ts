@@ -1,5 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -11,6 +20,7 @@ import { UserService } from './user.service';
 import { UserDto } from './dto/response/user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { DeleteResponseDto } from './dto/response/delete-user.dto';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -27,6 +37,22 @@ export class UserController {
   })
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
+  }
+
+  @Put(':userId')
+  @ApiOperation({
+    summary: 'Atualiza um usuário',
+  })
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos',
+  })
+  async updateUser(
+    @Param('userId') userId: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.updateUser(userId, updateUserDto);
   }
 
   @Get(':userId')
