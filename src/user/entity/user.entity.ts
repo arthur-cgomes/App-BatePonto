@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from 'src/common/entity/base.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
-import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 @Entity()
 @Unique(['email'])

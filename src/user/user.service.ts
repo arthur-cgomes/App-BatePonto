@@ -12,7 +12,7 @@ export class UserService {
 
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
-      where: [{ email: createUserDto.email }],
+      where: { email: createUserDto.email },
     });
 
     if (checkUser) {
