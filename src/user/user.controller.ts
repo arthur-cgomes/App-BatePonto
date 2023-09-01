@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -10,6 +10,7 @@ import {
 import { UserService } from './user.service';
 import { UserDto } from './dto/response/user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
+import { DeleteResponseDto } from './dto/response/delete-user.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -36,5 +37,15 @@ export class UserController {
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
   async getUserById(@Param('userId') userId: string) {
     return await this.userService.getUserById(userId);
+  }
+
+  @Delete(':userId')
+  @ApiOperation({
+    summary: 'Exclui um usuário',
+  })
+  @ApiOkResponse({ type: DeleteResponseDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  async deleteUserById(@Param('userId') userId: string) {
+    return { message: await this.userService.deleteUser(userId) };
   }
 }
