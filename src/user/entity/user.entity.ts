@@ -4,13 +4,8 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 
 @Entity()
-@Unique(['externalId', 'email'])
+@Unique(['email'])
 export class User extends BaseCollection {
-  @ApiProperty()
-  @Column({ length: 150 })
-  @IsUUID()
-  externalId: string;
-
   @ApiProperty()
   @Column()
   @IsEmail()
@@ -22,12 +17,12 @@ export class User extends BaseCollection {
   name: string;
 
   @ApiProperty()
-  @Column({ length: 11 })
+  @Column({ length: 14 })
   @IsNotEmpty()
   cpf: string;
 
   @ApiProperty()
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'date' })
   @IsNotEmpty()
   birthDate: Date;
 
