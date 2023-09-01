@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -14,6 +15,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
@@ -21,6 +23,7 @@ import { UserDto } from './dto/response/user.dto';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { DeleteResponseDto } from './dto/response/delete-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { GetAllUsersResponseDto } from './dto/request/get-all-user-response.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -63,6 +66,24 @@ export class UserController {
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
   async getUserById(@Param('userId') userId: string) {
     return await this.userService.getUserById(userId);
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: 'Retorna todos usuários',
+  })
+  @ApiQuery({ name: 'take', required: false })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiOkResponse({ type: GetAllUsersResponseDto })
+  async getAllUsers(
+    @Query('take') take = 10,
+    @Query('skip') skip = 0,
+    @Query('userId') userId?: string,
+    @Query('search') search?: string,
+  ) {
+    return await this.userService.getAllUsers(take, skip, userId, search);
   }
 
   @Delete(':userId')

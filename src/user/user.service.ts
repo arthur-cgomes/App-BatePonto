@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { In, Repository } from 'typeorm';
+import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { GetAllUsersResponseDto } from './dto/request/get-all-user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -55,6 +56,36 @@ export class UserService {
 
   public async getUserByIds(ids: string[]): Promise<User[]> {
     return await this.userRepository.findBy({ id: In(ids) });
+  }
+
+  public async getAllUsers(
+    take: number,
+    skip: number,
+    userId?: string,
+    search?: string,
+  ): Promise<GetAllUsersResponseDto> {
+    const conditions: FindManyOptions<User> = {
+      take,
+      skip,
+    };
+
+    if (userId) {
+      conditions.where = { id: userId };
+    }
+
+    if (search) {
+      conditions.where = { name: ILike('%' + search + '%') };
+    }
+
+    const [users, count] = await this.userRepository.findAndCount(conditions);
+
+    if (users.length == 0) {
+      return { skip: null, total: 0, users };
+    }
+    const over = count - Number(take) - Number(skip);
+    skip = over <= 0 ? null : Number(skip) + Number(take);
+
+    return { skip, total: count, users };
   }
 
   public async deleteUser(userId: string): Promise<string> {
