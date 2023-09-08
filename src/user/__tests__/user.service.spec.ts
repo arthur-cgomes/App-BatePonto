@@ -40,9 +40,45 @@ describe('UserService', () => {
     phone: 'phone',
   } as User;
 
+  describe('checkUserTologin', () => {
+    it('should find a user by email', async () => {
+      const userEmail = 'user@example.com';
+      const userPassword = 'password123';
+      const user = new User();
+      user.id = '1';
+      user.email = userEmail;
+      user.password = userPassword;
+
+      repositoryMock.findOne.mockResolvedValue(user);
+
+      const result = await service.checkUserToLogin(userEmail);
+
+      expect(result).toEqual(user);
+
+      expect(repositoryMock.findOne).toHaveBeenCalledWith({
+        where: { email: userEmail },
+        select: ['id', 'email', 'password'],
+      });
+    });
+
+    it('should throw NotFoundException when user with email not found', async () => {
+      repositoryMock.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.checkUserToLogin('nonexistent@example.com'),
+      ).rejects.toThrowError(NotFoundException);
+
+      expect(repositoryMock.findOne).toHaveBeenCalledWith({
+        where: { email: 'nonexistent@example.com' },
+        select: ['id', 'email', 'password'],
+      });
+    });
+  });
+
   describe('createUser', () => {
     const createUserDto: CreateUserDto = {
       email: 'email@teste.com.br',
+      password: 'password',
       name: 'name',
       cpf: 'cpf',
       birthDate: new Date(),
