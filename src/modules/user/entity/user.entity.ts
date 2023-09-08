@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseCollection } from '../../common/entity/base.entity';
+import { BaseCollection } from '../../../common/entity/base.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcrypt';
@@ -35,6 +35,11 @@ export class User extends BaseCollection {
   @Column({ length: 20 })
   @IsNotEmpty()
   phone: string;
+
+  @ApiProperty()
+  @Column({ type: 'bool', name: 'active', default: false })
+  @IsNotEmpty()
+  blockedUser: boolean;
 
   @BeforeInsert()
   @BeforeUpdate()
