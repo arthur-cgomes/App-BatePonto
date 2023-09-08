@@ -4,6 +4,6 @@ import { UserTypeController } from './user-type.controller';
 
 @Module({
   providers: [UserTypeService],
-  controllers: [UserTypeController]
+  controllers: [UserTypeController],
 })
 export class UserTypeModule {}
