@@ -3,7 +3,7 @@ import { UserService } from '../user.service';
 import {
   MockRepository,
   repositoryMockFactory,
-} from '../../common/mock/test.util';
+} from '../../../common/mock/test.util';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
