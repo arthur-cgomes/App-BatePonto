@@ -7,9 +7,11 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -24,7 +26,9 @@ import { CreateUserDto } from './dto/request/create-user.dto';
 import { DeleteResponseDto } from './dto/response/delete-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
+import { AuthGuard } from '@nestjs/passport';
 
+@ApiBearerAuth()
 @ApiTags('User')
 @Controller('users')
 export class UserController {
@@ -42,6 +46,7 @@ export class UserController {
     return await this.userService.createUser(createUserDto);
   }
 
+  @UseGuards(AuthGuard())
   @Put(':userId')
   @ApiOperation({
     summary: 'Atualiza um usuário',
@@ -58,6 +63,7 @@ export class UserController {
     return await this.userService.updateUser(userId, updateUserDto);
   }
 
+  @UseGuards(AuthGuard())
   @Get(':userId')
   @ApiOperation({
     summary: 'Retorna um usuário pelo id',
@@ -68,6 +74,7 @@ export class UserController {
     return await this.userService.getUserById(userId);
   }
 
+  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({
     summary: 'Retorna todos usuários',
@@ -86,6 +93,7 @@ export class UserController {
     return await this.userService.getAllUsers(take, skip, userId, search);
   }
 
+  @UseGuards(AuthGuard())
   @Delete(':userId')
   @ApiOperation({
     summary: 'Exclui um usuário',

@@ -16,6 +16,16 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  async checkUserToLogin(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
+    if (!user) throw new NotFoundException('user with this email not found');
+
+    return user;
+  }
+
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
