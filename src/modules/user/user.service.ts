@@ -1,14 +1,16 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entity/user.entity';
+import { User, UserTypeEnum } from './entity/user.entity';
 import { FindManyOptions, ILike, In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
+import { UpdateUserTypeDto } from './dto/request/update-userType.dto';
 
 @Injectable()
 export class UserService {
@@ -28,7 +30,7 @@ export class UserService {
 
   public async createUser(createUserDto: CreateUserDto): Promise<User> {
     const checkUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
+      where: [{ email: createUserDto.email }, { cpf: createUserDto.cpf }],
     });
 
     if (checkUser) {
@@ -48,6 +50,24 @@ export class UserService {
       await this.userRepository.preload({
         id: userId,
         ...updateUserDto,
+      })
+    ).save();
+  }
+
+  public async updateUserType(
+    userId: string,
+    updateUserTypeDto: UpdateUserTypeDto,
+  ): Promise<User> {
+    await this.getUserById(userId);
+
+    if (!Object.values(UserTypeEnum).includes(updateUserTypeDto.userType)) {
+      throw new BadRequestException('Invalid user type');
+    }
+
+    return await (
+      await this.userRepository.preload({
+        id: userId,
+        ...updateUserTypeDto,
       })
     ).save();
   }
@@ -73,6 +93,8 @@ export class UserService {
     skip: number,
     userId?: string,
     search?: string,
+    email?: string,
+    phone?: string,
   ): Promise<GetAllUsersResponseDto> {
     const conditions: FindManyOptions<User> = {
       take,
@@ -85,6 +107,14 @@ export class UserService {
 
     if (search) {
       conditions.where = { name: ILike('%' + search + '%') };
+    }
+
+    if (email) {
+      conditions.where = { email: ILike('%' + email + '%') };
+    }
+
+    if (phone) {
+      conditions.where = { phone: ILike('%' + phone + '%') };
     }
 
     const [users, count] = await this.userRepository.findAndCount(conditions);

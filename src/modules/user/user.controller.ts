@@ -27,6 +27,7 @@ import { DeleteResponseDto } from './dto/response/delete-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateUserTypeDto } from './dto/request/update-userType.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -64,6 +65,23 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
+  @Put(':userId/type')
+  @ApiOperation({
+    summary: 'Atualiza o tipo de usuário',
+  })
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos',
+  })
+  async updateUserType(
+    @Param('userId') userId: string,
+    @Body() updateUserTypeDto: UpdateUserTypeDto,
+  ) {
+    return await this.userService.updateUserType(userId, updateUserTypeDto);
+  }
+
+  @UseGuards(AuthGuard())
   @Get(':userId')
   @ApiOperation({
     summary: 'Retorna um usuário pelo id',
@@ -83,14 +101,25 @@ export class UserController {
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'email', required: false })
+  @ApiQuery({ name: 'phone', required: false })
   @ApiOkResponse({ type: GetAllUsersResponseDto })
   async getAllUsers(
     @Query('take') take = 10,
     @Query('skip') skip = 0,
     @Query('userId') userId?: string,
     @Query('search') search?: string,
+    @Query('email') email?: string,
+    @Query('phone') phone?: string,
   ) {
-    return await this.userService.getAllUsers(take, skip, userId, search);
+    return await this.userService.getAllUsers(
+      take,
+      skip,
+      userId,
+      search,
+      email,
+      phone,
+    );
   }
 
   @UseGuards(AuthGuard())
