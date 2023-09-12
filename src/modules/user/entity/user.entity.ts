@@ -4,6 +4,14 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 
+export enum UserTypeEnum {
+  SUPER_ADMIN = 'super_admin',
+  COMPANY_ADMIN = 'company_admin',
+  TEAM_ADMIN = 'team_admin',
+  COLLABORATOR = 'collaborator',
+  FREE_TRIAL = 'free_trial',
+}
+
 @Entity()
 @Unique(['email'])
 export class User extends BaseCollection {
@@ -37,9 +45,18 @@ export class User extends BaseCollection {
   phone: string;
 
   @ApiProperty()
-  @Column({ type: 'bool', name: 'active', default: false })
+  @Column({ type: 'bool', name: 'blockedUser', default: false })
   @IsNotEmpty()
   blockedUser: boolean;
+
+  @ApiProperty()
+  @Column({
+    type: 'enum',
+    enum: UserTypeEnum,
+    default: UserTypeEnum.FREE_TRIAL,
+  })
+  @IsNotEmpty()
+  userType: UserTypeEnum;
 
   @BeforeInsert()
   @BeforeUpdate()
