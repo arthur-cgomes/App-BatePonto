@@ -24,8 +24,4 @@ export abstract class BaseCollection extends BaseEntity {
     select: false,
   })
   updatedAt: string;
-
-  @ApiProperty({ type: Boolean })
-  @Column({ type: 'bool', name: 'active', default: true })
-  active: boolean;
 }

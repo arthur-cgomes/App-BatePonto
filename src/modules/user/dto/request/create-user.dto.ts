@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { UserTypeEnum } from '../../entity/user.entity';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -25,4 +26,9 @@ export class CreateUserDto {
   @ApiProperty()
   @IsOptional()
   phone: string;
+
+  @ApiProperty({ enum: UserTypeEnum })
+  @IsEnum(UserTypeEnum)
+  @IsNotEmpty()
+  userType: UserTypeEnum;
 }
