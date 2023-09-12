@@ -72,6 +72,21 @@ export class UserService {
     ).save();
   }
 
+  public async updateBlockedUser(
+    userId: string,
+    blockedUser: boolean,
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
+
+    if (user.blockedUser === blockedUser) {
+      const statusMessage = blockedUser ? 'blocked' : 'unblocked';
+      throw new ConflictException(`User is already ${statusMessage}`);
+    }
+
+    user.blockedUser = blockedUser;
+    return await this.userRepository.save(user);
+  }
+
   public async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },

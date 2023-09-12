@@ -65,7 +65,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Put(':userId/type')
+  @Put(':userId/userType')
   @ApiOperation({
     summary: 'Atualiza o tipo de usuário',
   })
@@ -79,6 +79,23 @@ export class UserController {
     @Body() updateUserTypeDto: UpdateUserTypeDto,
   ) {
     return await this.userService.updateUserType(userId, updateUserTypeDto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Put(':userId/blockedUser')
+  @ApiOperation({
+    summary: 'Bloqueia e desbloqueia um usuário',
+  })
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos',
+  })
+  async updateBlockedUser(
+    @Param('userId') userId: string,
+    @Body() blockedUser: boolean,
+  ) {
+    return await this.userService.updateBlockedUser(userId, blockedUser);
   }
 
   @UseGuards(AuthGuard())
