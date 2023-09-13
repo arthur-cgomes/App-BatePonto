@@ -3,14 +3,16 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserTypeEnum } from './entity/user.entity';
-import { FindManyOptions, ILike, In, Repository } from 'typeorm';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
 import { UpdateUserTypeDto } from './dto/request/update-userType.dto';
+import { UpdateBlockedUserDto } from './dto/request/update-blocked-user.dto';
 
 @Injectable()
 export class UserService {
@@ -21,9 +23,14 @@ export class UserService {
   async checkUserToLogin(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'blockedUser'],
     });
+    
     if (!user) throw new NotFoundException('user with this email not found');
+
+    if (user.blockedUser) {
+      throw new UnauthorizedException('deactivated user');
+    }
 
     return user;
   }
@@ -54,37 +61,55 @@ export class UserService {
     ).save();
   }
 
-  public async updateUserType(
-    userId: string,
+  public async updateUsersType(
     updateUserTypeDto: UpdateUserTypeDto,
-  ): Promise<User> {
-    await this.getUserById(userId);
+  ): Promise<User[]> {
+    const updatedUsers: User[] = [];
 
-    if (!Object.values(UserTypeEnum).includes(updateUserTypeDto.userType)) {
-      throw new BadRequestException('Invalid user type');
+    for (const userId of updateUserTypeDto.userIds) {
+      const user = await this.getUserById(userId);
+
+      if (!Object.values(UserTypeEnum).includes(updateUserTypeDto.userType)) {
+        throw new BadRequestException('Invalid user type');
+      }
+
+      user.userType = updateUserTypeDto.userType;
+
+      const updatedUser = await this.userRepository.preload(user);
+
+      if (!updatedUser) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+
+      const savedUser = await updatedUser.save();
+      updatedUsers.push(savedUser);
     }
 
-    return await (
-      await this.userRepository.preload({
-        id: userId,
-        ...updateUserTypeDto,
-      })
-    ).save();
+    return updatedUsers;
   }
 
-  public async updateBlockedUser(
-    userId: string,
-    blockedUser: boolean,
-  ): Promise<User> {
-    const user = await this.getUserById(userId);
+  public async updateBlockedUsers(
+    updateBlockedUserDto: UpdateBlockedUserDto,
+  ): Promise<User[]> {
+    const updatedUsers: User[] = [];
 
-    if (user.blockedUser === blockedUser) {
-      const statusMessage = blockedUser ? 'blocked' : 'unblocked';
-      throw new ConflictException(`User is already ${statusMessage}`);
+    for (const userId of updateBlockedUserDto.userIds) {
+      const user = await this.getUserById(userId);
+
+      if (user.blockedUser === updateBlockedUserDto.blockedUser) {
+        const statusMessage = updateBlockedUserDto.blockedUser
+          ? 'blocked'
+          : 'unblocked';
+        throw new ConflictException(`User is already ${statusMessage}`);
+      }
+
+      user.blockedUser = updateBlockedUserDto.blockedUser;
+
+      const updatedUser = await this.userRepository.save(user);
+      updatedUsers.push(updatedUser);
     }
 
-    user.blockedUser = blockedUser;
-    return await this.userRepository.save(user);
+    return updatedUsers;
   }
 
   public async getUserById(userId: string): Promise<User> {
@@ -97,10 +122,6 @@ export class UserService {
     }
 
     return user;
-  }
-
-  public async getUserByIds(ids: string[]): Promise<User[]> {
-    return await this.userRepository.findBy({ id: In(ids) });
   }
 
   public async getAllUsers(

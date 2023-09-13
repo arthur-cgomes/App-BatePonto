@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Put,
   Query,
@@ -28,6 +27,7 @@ import { UpdateUserDto } from './dto/request/update-user.dto';
 import { GetAllUsersResponseDto } from './dto/response/get-all-user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserTypeDto } from './dto/request/update-userType.dto';
+import { UpdateBlockedUserDto } from './dto/request/update-blocked-user.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -58,14 +58,14 @@ export class UserController {
     description: 'Dados inválidos',
   })
   async updateUser(
-    @Param('userId') userId: string,
+    @Query('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return await this.userService.updateUser(userId, updateUserDto);
   }
 
   @UseGuards(AuthGuard())
-  @Put(':userId/userType')
+  @Put('userType')
   @ApiOperation({
     summary: 'Atualiza o tipo de usuário',
   })
@@ -74,15 +74,12 @@ export class UserController {
   @ApiBadRequestResponse({
     description: 'Dados inválidos',
   })
-  async updateUserType(
-    @Param('userId') userId: string,
-    @Body() updateUserTypeDto: UpdateUserTypeDto,
-  ) {
-    return await this.userService.updateUserType(userId, updateUserTypeDto);
+  async updateUsersType(@Body() updateUserTypeDto: UpdateUserTypeDto) {
+    return await this.userService.updateUsersType(updateUserTypeDto);
   }
 
   @UseGuards(AuthGuard())
-  @Put(':userId/blockedUser')
+  @Put('blockedUser')
   @ApiOperation({
     summary: 'Bloqueia e desbloqueia um usuário',
   })
@@ -91,11 +88,8 @@ export class UserController {
   @ApiBadRequestResponse({
     description: 'Dados inválidos',
   })
-  async updateBlockedUser(
-    @Param('userId') userId: string,
-    @Body() blockedUser: boolean,
-  ) {
-    return await this.userService.updateBlockedUser(userId, blockedUser);
+  async updateBlockedUsers(@Body() updateBlockedUserDto: UpdateBlockedUserDto) {
+    return await this.userService.updateBlockedUsers(updateBlockedUserDto);
   }
 
   @UseGuards(AuthGuard())
@@ -105,7 +99,7 @@ export class UserController {
   })
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
-  async getUserById(@Param('userId') userId: string) {
+  async getUserById(@Query('userId') userId: string) {
     return await this.userService.getUserById(userId);
   }
 
@@ -146,7 +140,7 @@ export class UserController {
   })
   @ApiOkResponse({ type: DeleteResponseDto })
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
-  async deleteUserById(@Param('userId') userId: string) {
+  async deleteUserById(@Query('userId') userId: string) {
     return { message: await this.userService.deleteUser(userId) };
   }
 }
