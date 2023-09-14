@@ -75,7 +75,7 @@ export class UserService {
 
       user.userType = updateUserTypeDto.userType;
 
-      const updatedUser = await this.userRepository.preload(user);
+      await this.userRepository.preload(user);
 
       const savedUser = await this.userRepository.save(user);
       updatedUsers.push(savedUser);
@@ -84,31 +84,36 @@ export class UserService {
     return updatedUsers;
   }
 
-  public async checkUserBlocked(userId: string, blockedUser: boolean): Promise<void> {
+  public async checkUserBlocked(
+    userId: string,
+    blockedUser: boolean,
+  ): Promise<void> {
     const user = await this.getUserById(userId);
-  
+
     if (user.blockedUser === blockedUser) {
       throw new ConflictException(`user already conflict`);
     }
   }
-  
-  public async updateBlockedUsers(updateBlockedUserDto: UpdateBlockedUserDto): Promise<User[]> {
+
+  public async updateBlockedUsers(
+    updateBlockedUserDto: UpdateBlockedUserDto,
+  ): Promise<User[]> {
     const updatedUsers: User[] = [];
-  
+
     for (const userId of updateBlockedUserDto.userIds) {
       await this.checkUserBlocked(userId, updateBlockedUserDto.blockedUser);
-  
+
       const user = await this.getUserById(userId);
-  
+
       user.blockedUser = updateBlockedUserDto.blockedUser;
-  
+
       const updatedUser = await this.userRepository.save(user);
       updatedUsers.push(updatedUser);
     }
-  
+
     return updatedUsers;
   }
-  
+
   public async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },

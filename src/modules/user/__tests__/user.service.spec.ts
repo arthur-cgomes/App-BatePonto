@@ -205,48 +205,46 @@ describe('UserService', () => {
         userIds: ['userId-1', 'userId-2'],
         blockedUser: false,
       };
-    
+
       const user1 = new User();
       user1.id = 'userId-1';
       user1.blockedUser = true;
-    
+
       const user2 = new User();
       user2.id = 'userId-2';
       user2.blockedUser = true;
-    
+
       repositoryMock.findOne
         .mockResolvedValueOnce(user1)
         .mockResolvedValueOnce(user2);
-    
+
       repositoryMock.save
         .mockResolvedValueOnce({ ...user1, blockedUser: false })
         .mockResolvedValueOnce({ ...user2, blockedUser: false });
-    
+
       const result = await service.updateBlockedUsers(updateBlockedUserDto);
-    
+
       expect(result).toHaveLength(2);
       expect(result[0].blockedUser).toBe(false);
       expect(result[1].blockedUser).toBe(false);
     });
-    
 
     it('should throw ConflictException for already blocked users', async () => {
       const updateBlockedUserDto: UpdateBlockedUserDto = {
         userIds: ['userId-1'],
         blockedUser: true,
       };
-    
+
       const user1 = new User();
       user1.id = 'userId-1';
       user1.blockedUser = true;
-    
+
       repositoryMock.findOne.mockResolvedValueOnce(user1);
-    
+
       await expect(
         service.updateBlockedUsers(updateBlockedUserDto),
       ).rejects.toThrow(ConflictException);
     });
-    
 
     it('should throw ConflictException for already blocked users', async () => {
       const updateBlockedUserDto: UpdateBlockedUserDto = {
