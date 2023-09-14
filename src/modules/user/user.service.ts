@@ -25,7 +25,7 @@ export class UserService {
       where: { email },
       select: ['id', 'email', 'password', 'blockedUser'],
     });
-    
+
     if (!user) throw new NotFoundException('user with this email not found');
 
     if (user.blockedUser) {
@@ -70,48 +70,45 @@ export class UserService {
       const user = await this.getUserById(userId);
 
       if (!Object.values(UserTypeEnum).includes(updateUserTypeDto.userType)) {
-        throw new BadRequestException('Invalid user type');
+        throw new BadRequestException('invalid user type');
       }
 
       user.userType = updateUserTypeDto.userType;
 
       const updatedUser = await this.userRepository.preload(user);
 
-      if (!updatedUser) {
-        throw new NotFoundException(`User with ID ${userId} not found`);
-      }
-
-      const savedUser = await updatedUser.save();
+      const savedUser = await this.userRepository.save(user);
       updatedUsers.push(savedUser);
     }
 
     return updatedUsers;
   }
 
-  public async updateBlockedUsers(
-    updateBlockedUserDto: UpdateBlockedUserDto,
-  ): Promise<User[]> {
+  public async checkUserBlocked(userId: string, blockedUser: boolean): Promise<void> {
+    const user = await this.getUserById(userId);
+  
+    if (user.blockedUser === blockedUser) {
+      throw new ConflictException(`user already conflict`);
+    }
+  }
+  
+  public async updateBlockedUsers(updateBlockedUserDto: UpdateBlockedUserDto): Promise<User[]> {
     const updatedUsers: User[] = [];
-
+  
     for (const userId of updateBlockedUserDto.userIds) {
+      await this.checkUserBlocked(userId, updateBlockedUserDto.blockedUser);
+  
       const user = await this.getUserById(userId);
-
-      if (user.blockedUser === updateBlockedUserDto.blockedUser) {
-        const statusMessage = updateBlockedUserDto.blockedUser
-          ? 'blocked'
-          : 'unblocked';
-        throw new ConflictException(`User is already ${statusMessage}`);
-      }
-
+  
       user.blockedUser = updateBlockedUserDto.blockedUser;
-
+  
       const updatedUser = await this.userRepository.save(user);
       updatedUsers.push(updatedUser);
     }
-
+  
     return updatedUsers;
   }
-
+  
   public async getUserById(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
