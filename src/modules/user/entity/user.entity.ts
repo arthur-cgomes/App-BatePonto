@@ -13,7 +13,7 @@ export enum UserTypeEnum {
 }
 
 @Entity()
-@Unique(['email'])
+@Unique(['email', 'cpf'])
 export class User extends BaseCollection {
   @ApiProperty()
   @Column()
