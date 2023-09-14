@@ -8,7 +8,8 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PointRecord]), UserModule,
+    TypeOrmModule.forFeature([PointRecord]),
+    UserModule,
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
   ],
   controllers: [PointRecordController],

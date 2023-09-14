@@ -13,10 +13,12 @@ export class PointRecordService {
     private readonly pointRecordRepository: Repository<PointRecord>,
   ) {}
 
-  async createPointRecord(createPointRecordDto: CreatePointRecordDto): Promise<PointRecord> {
+  async createPointRecord(
+    createPointRecordDto: CreatePointRecordDto,
+  ): Promise<PointRecord> {
     const { userId, pointRecordType } = createPointRecordDto;
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); 
+    currentDate.setHours(0, 0, 0, 0);
 
     await this.userService.getUserById(userId);
 
@@ -29,10 +31,13 @@ export class PointRecordService {
     });
 
     if (existingRecord) {
-      throw new ConflictException('such a record already exists for this user today');
+      throw new ConflictException(
+        'such a record already exists for this user today',
+      );
     }
 
-    const newPointRecord = this.pointRecordRepository.create(createPointRecordDto);
+    const newPointRecord =
+      this.pointRecordRepository.create(createPointRecordDto);
     return await this.pointRecordRepository.save(newPointRecord);
   }
 }
