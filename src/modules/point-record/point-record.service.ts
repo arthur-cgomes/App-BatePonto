@@ -26,7 +26,7 @@ export class PointRecordService {
       where: {
         userId,
         pointRecordType,
-        dateTime: currentDate,
+        createdAt: currentDate,
       },
     });
 

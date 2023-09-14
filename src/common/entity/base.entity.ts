@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDate } from 'class-validator';
 
 export abstract class BaseCollection extends BaseEntity {
   @ApiProperty()
@@ -15,12 +16,14 @@ export abstract class BaseCollection extends BaseEntity {
   @CreateDateColumn({
     type: 'timestamp',
   })
-  createdAt: string;
+  @IsDate()
+  createdAt: Date;
 
   @ApiProperty({ type: Date })
   @UpdateDateColumn({
     type: 'timestamp',
     select: false,
   })
-  updatedAt: string;
+  @IsDate()
+  updatedAt: Date;
 }
