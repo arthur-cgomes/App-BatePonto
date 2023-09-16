@@ -5,11 +5,11 @@ import { PointRecordEnum } from '../../entity/point-record.entity';
 export class CreatePointRecordDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsEnum(PointRecordEnum)
-  pointRecordType: PointRecordEnum;
+  @IsString()
+  userId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  userId: string;
+  @IsEnum(PointRecordEnum)
+  pointRecordType: PointRecordEnum;
 }

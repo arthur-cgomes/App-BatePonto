@@ -4,10 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PointRecord } from './entity/point-record.entity';
+import {
+  PointRecord,
+  PointRecordEnum,
+  PointRecordJustificationEnum,
+} from './entity/point-record.entity';
 import { CreatePointRecordDto } from './dto/request/create-point-record.dto';
-import { Between, Repository } from 'typeorm';
+import { Between, FindManyOptions, Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
+import { UpdatePointRecordDto } from './dto/request/update-point-record.dto';
+import { GetAllPointRecordsResponseDto } from './dto/response/get-all-point-records.dto';
 
 @Injectable()
 export class PointRecordService {
@@ -17,7 +23,7 @@ export class PointRecordService {
     private readonly pointRecordRepository: Repository<PointRecord>,
   ) {}
 
-  async createPointRecord(
+  public async createPointRecord(
     createPointRecordDto: CreatePointRecordDto,
   ): Promise<PointRecord> {
     const { userId, pointRecordType } = createPointRecordDto;
@@ -61,6 +67,19 @@ export class PointRecordService {
     return await this.pointRecordRepository.save(newPointRecord);
   }
 
+  public async updatePointRecordById(
+    updatePointRecordDto: UpdatePointRecordDto,
+  ): Promise<PointRecord> {
+    await this.getPointRecordsById(updatePointRecordDto.pointRecordId);
+
+    return await (
+      await this.pointRecordRepository.preload({
+        id: updatePointRecordDto.pointRecordId,
+        ...updatePointRecordDto,
+      })
+    ).save();
+  }
+
   public async getPointRecordsById(
     pointRecordId: string,
   ): Promise<PointRecord> {
@@ -73,6 +92,47 @@ export class PointRecordService {
     }
 
     return pointRecord;
+  }
+
+  public async getAllPointrecords(
+    take: number,
+    skip: number,
+    userId?: string,
+    pointRecordType?: PointRecordEnum,
+    justificationType?: PointRecordJustificationEnum,
+    createdAt?: Date,
+  ): Promise<GetAllPointRecordsResponseDto> {
+    const conditions: FindManyOptions<PointRecord> = {
+      take,
+      skip,
+    };
+
+    if (userId) {
+      conditions.where = { id: userId };
+    }
+
+    if (pointRecordType) {
+      conditions.where = { pointRecordType };
+    }
+
+    if (justificationType) {
+      conditions.where = { justificationType };
+    }
+
+    if (createdAt) {
+      conditions.where = { createdAt };
+    }
+
+    const [pointRecords, count] =
+      await this.pointRecordRepository.findAndCount(conditions);
+
+    if (pointRecords.length == 0) {
+      return { skip: null, total: 0, pointRecords };
+    }
+    const over = count - Number(take) - Number(skip);
+    skip = over <= 0 ? null : Number(skip) + Number(take);
+
+    return { skip, total: count, pointRecords };
   }
 
   public async deletePointRecordById(pointRecordId: string): Promise<string> {
