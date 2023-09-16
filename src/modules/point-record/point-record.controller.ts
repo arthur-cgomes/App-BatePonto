@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -26,5 +28,28 @@ export class PointRecordController {
   })
   async createPointRecord(@Body() createPointRecord: CreatePointRecordDto) {
     return await this.pointRecordService.createPointRecord(createPointRecord);
+  }
+
+  @Get(':pointRecordId')
+  @ApiOperation({
+    summary: 'Retorna o registro de ponto pelo id',
+  })
+  @ApiOkResponse({ type: PointRecordDto })
+  @ApiNotFoundResponse({ description: 'Registro de ponto não encontrado' })
+  async getPointRecordsById(@Query('pointRecordId') pointRecordId: string) {
+    return await this.pointRecordService.getPointRecordsById(pointRecordId);
+  }
+
+  @Delete(':pointRecordId')
+  @ApiOperation({
+    summary: 'Deleta o registro de ponto pelo id',
+  })
+  @ApiOkResponse({ type: PointRecordDto })
+  @ApiNotFoundResponse({ description: 'Registro de ponto não encontrado' })
+  async deletePointRecordById(@Query('pointRecordId') pointRecordId: string) {
+    return {
+      message:
+        await this.pointRecordService.deletePointRecordById(pointRecordId),
+    };
   }
 }
