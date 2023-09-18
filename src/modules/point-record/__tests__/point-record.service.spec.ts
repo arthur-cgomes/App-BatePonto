@@ -352,8 +352,6 @@ describe('PointRecordService', () => {
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
-
-
     it('should successfully return an empty list of point records', async () => {
       const take = 10;
       const skip = 0;
