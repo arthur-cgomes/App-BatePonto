@@ -52,7 +52,7 @@ export class PointRecordService {
       where: {
         userId,
         pointRecordType,
-        createdAt: Between(startDate, endDate),
+        dateTime: Between(startDate, endDate),
       },
     });
 
@@ -100,7 +100,7 @@ export class PointRecordService {
     userId?: string,
     pointRecordType?: PointRecordEnum,
     justificationType?: PointRecordJustificationEnum,
-    createdAt?: Date,
+    dateTime?: Date,
   ): Promise<GetAllPointRecordsResponseDto> {
     const conditions: FindManyOptions<PointRecord> = {
       take,
@@ -119,8 +119,8 @@ export class PointRecordService {
       conditions.where = { justificationType };
     }
 
-    if (createdAt) {
-      conditions.where = { createdAt };
+    if (dateTime) {
+      conditions.where = { dateTime };
     }
 
     const [pointRecords, count] =

@@ -94,7 +94,7 @@ export class PointRecordController {
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'pointRecordType', required: false })
   @ApiQuery({ name: 'justificationType', required: false })
-  @ApiQuery({ name: 'createdAt', required: false })
+  @ApiQuery({ name: 'dateTime', required: false })
   @ApiOkResponse({ type: GetAllPointRecordsResponseDto })
   async getAllPointrecords(
     @Query('take') take: 10,
@@ -103,7 +103,7 @@ export class PointRecordController {
     @Query('pointRecordType') pointRecordType?: PointRecordEnum,
     @Query('justificationType')
     justificationType?: PointRecordJustificationEnum,
-    @Query('createdAt') createdAt?: Date,
+    @Query('dateTime') dateTime?: Date,
   ) {
     return await this.pointRecordService.getAllPointrecords(
       take,
@@ -111,7 +111,7 @@ export class PointRecordController {
       userId,
       pointRecordType,
       justificationType,
-      createdAt,
+      dateTime,
     );
   }
 
