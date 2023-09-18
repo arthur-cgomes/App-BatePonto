@@ -169,7 +169,7 @@ describe('PointRecordService', () => {
 
   describe('getAllPointrecords', () => {
     it('should successfully get all point records', async () => {
-      const take = 10;
+      const take = 1;
       const skip = 0;
       const conditions: FindManyOptions<PointRecord> = {
         take,
@@ -190,7 +190,7 @@ describe('PointRecordService', () => {
       );
 
       expect(result).toStrictEqual({
-        skip: null,
+        skip: 1,
         total: 10,
         pointRecords: [pointRecord],
       });
@@ -351,6 +351,8 @@ describe('PointRecordService', () => {
       });
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
+
+
 
     it('should successfully return an empty list of point records', async () => {
       const take = 10;
