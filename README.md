@@ -53,8 +53,6 @@ $ yarn run test:cov
 
 The endpoints were documented via Swagger, run the project and check the documentation via [here](http://localhost:3000/api/#/). Also available via the link: http://localhost:3000/api/#/.
 
-<img src="img/AppBatePonto.png">
-
 ## Support
 
 Contact [here](https://github.com/arthur-cgomes) for support.
