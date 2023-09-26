@@ -14,8 +14,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('BatePonto')
-    .setDescription('Sistema de registro de ponto')
-    .setVersion('1.0')
+    .setDescription('Registro de ponto')
+    .setVersion('1.1.0')
     .addTag('Endpoints:')
     .build();
 
