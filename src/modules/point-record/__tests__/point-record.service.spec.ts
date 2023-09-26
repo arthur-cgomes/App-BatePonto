@@ -321,14 +321,14 @@ describe('PointRecordService', () => {
       expect(repositoryMock.findAndCount).toHaveBeenCalledWith(conditions);
     });
 
-    it('should successfully get all point record with createdAt', async () => {
-      const createdAt = new Date();
+    it('should successfully get all point record with dateTime', async () => {
+      const dateTime = new Date();
       const take = 10;
       const skip = 0;
       const conditions: FindManyOptions<PointRecord> = {
         take,
         skip,
-        where: { createdAt },
+        where: { dateTime },
       };
 
       repositoryMock.findAndCount = jest
@@ -341,7 +341,7 @@ describe('PointRecordService', () => {
         null,
         null,
         null,
-        createdAt,
+        dateTime,
       );
 
       expect(result).toStrictEqual({
