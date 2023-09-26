@@ -451,6 +451,4 @@ describe('UserService', () => {
       expect(result).toStrictEqual('user deleted successfully');
     });
   });
-
-  // End unit tests
 });

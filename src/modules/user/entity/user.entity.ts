@@ -1,8 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from '../../../common/entity/base.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Unique } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  Unique,
+} from 'typeorm';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import { PointRecord } from '../../../modules/point-record/entity/point-record.entity';
 
 export enum UserTypeEnum {
   SUPER_ADMIN = 'super_admin',
@@ -57,6 +65,9 @@ export class User extends BaseCollection {
   })
   @IsNotEmpty()
   userType: UserTypeEnum;
+
+  @OneToMany(() => PointRecord, (pointRecord) => pointRecord.user)
+  pointRecords: PointRecord[];
 
   @BeforeInsert()
   @BeforeUpdate()
