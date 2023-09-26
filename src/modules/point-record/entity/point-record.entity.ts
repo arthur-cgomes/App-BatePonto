@@ -2,7 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseCollection } from '../../../common/entity/base.entity';
 import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../../modules/user/entity/user.entity';
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export enum PointRecordEnum {
   PROHIBITED = 'prohibited',
@@ -68,7 +74,9 @@ export class PointRecord extends BaseCollection {
 
   @BeforeInsert()
   formatarDataHora() {
-    const dataHoraFormatada = `${this.dateTime.toISOString().split('T')[0]} ${this.dateTime.toLocaleTimeString()}`;
+    const dataHoraFormatada = `${
+      this.dateTime.toISOString().split('T')[0]
+    } ${this.dateTime.toLocaleTimeString()}`;
     this.dateTime = new Date(dataHoraFormatada);
   }
 }
